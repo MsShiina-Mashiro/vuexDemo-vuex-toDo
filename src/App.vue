@@ -8,7 +8,7 @@
     />
     <a-button type="primary" @click="handleAddList">添加事项</a-button>
 
-    <a-list bordered :dataSource="list" class="dt_list">
+    <a-list bordered :dataSource="infoList" class="dt_list">
       <a-list-item slot="renderItem" slot-scope="item">
         <!-- 复选框 -->
         <a-checkbox
@@ -23,22 +23,34 @@
       <!-- footer区域 -->
       <div slot="footer" class="footer">
         <!-- 未完成的任务个数 -->
-        <span>0条剩余</span>
+        <span>{{ getUndoneNumber }}条剩余</span>
         <!-- 操作按钮 -->
         <a-button-group>
-          <a-button type="primary">全部</a-button>
-          <a-button>未完成</a-button>
-          <a-button>已完成</a-button>
+          <a-button
+            :type="showItem === 'all' ? 'primary' : ''"
+            @click="handleShowItems('all')"
+            >全部</a-button
+          >
+          <a-button
+            :type="showItem === 'undone' ? 'primary' : ''"
+            @click="handleShowItems('undone')"
+            >未完成</a-button
+          >
+          <a-button
+            :type="showItem === 'done' ? 'primary' : ''"
+            @click="handleShowItems('done')"
+            >已完成</a-button
+          >
         </a-button-group>
         <!-- 把已经完成的任务清空 -->
-        <a>清除已完成</a>
+        <a @click="removeDoneList">清除已完成</a>
       </div>
     </a-list>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 
 export default {
   name: 'app',
@@ -50,7 +62,8 @@ export default {
     this.$store.dispatch('getList')
   },
   computed: {
-    ...mapState(['list', 'inputValue'])
+    ...mapState(['list', 'inputValue', 'showItem']),
+    ...mapGetters(['getUndoneNumber', 'infoList'])
   },
   methods: {
     changeInput(e) {
@@ -74,6 +87,12 @@ export default {
         id: id
       }
       this.$store.commit('changeCheckedList', param)
+    },
+    handleShowItems(str) {
+      this.$store.commit('changeViewKey', str)
+    },
+    removeDoneList() {
+      this.$store.commit('removeDoneList')
     }
   }
 }

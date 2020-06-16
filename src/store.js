@@ -10,7 +10,8 @@ export default new Vuex.Store({
     list: [],
     // 文本框的内容
     inputValue: '',
-    nextId: 5
+    nextId: 5,
+    showItem: 'all'
   },
   mutations: {
     initList(state, list) {
@@ -36,6 +37,12 @@ export default new Vuex.Store({
     changeCheckedList(state, obj) {
       const index = state.list.findIndex(x => x.id === obj.id)
       state.list[index].done = obj.done
+    },
+    changeViewKey(state, str) {
+      state.showItem = str
+    },
+    removeDoneList(state) {
+      state.list = state.list.filter(x => x.done === false)
     }
   },
   actions: {
@@ -46,5 +53,21 @@ export default new Vuex.Store({
       })
     }
   },
-  getters: {}
+  getters: {
+    getUndoneNumber(state) {
+      return state.list.filter(x => x.done === false).length
+    },
+    infoList(state) {
+      if (state.showItem === 'all') {
+        return state.list
+      }
+      if (state.showItem === 'done') {
+        return state.list.filter(x => x.done === true)
+      }
+      if (state.showItem === 'undone') {
+        return state.list.filter(x => x.done === false)
+      }
+      return state.list
+    }
+  }
 })
